@@ -14,14 +14,14 @@ type Entry interface {
 
 func newEntry(path string) Entry {
 	if strings.Contains(path, pathListSeparator) {
-		return new CompositeEntry(path)
+		return newCompositeEntry(path)
 	}
 	if strings.HasSuffix(path, "*") {
-		return new WildcardEntry(path)
+		return newWildcardEntry(path)
 	}
 	if strings.HasSuffix(path, ".jar") || strings.HasSuffix(path, ".JAR") ||
-	strings.HasSuffix(path, ".zip") || strings.HasSuffix(path, ".ZIP") {
+		strings.HasSuffix(path, ".zip") || strings.HasSuffix(path, ".ZIP") {
 		return newZipEntry(path)
 	}
-	return new DirEntry(path)
+	return newDirEntry(path)
 }
