@@ -2,6 +2,26 @@ package classfile
 
 import "fmt"
 
+/*
+ClassFile {
+    u4             magic;
+    u2             minor_version;
+    u2             major_version;
+    u2             constant_pool_count;
+    cp_info        constant_pool[constant_pool_count-1];
+    u2             access_flags;
+    u2             this_class;
+    u2             super_class;
+    u2             interfaces_count;
+    u2             interfaces[interfaces_count];
+    u2             fields_count;
+    field_info     fields[fields_count];
+    u2             methods_count;
+    method_info    methods[methods_count];
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+*/
 type ClassFile struct {
 	// magic        uint32
 	minorVersion uint16
@@ -33,35 +53,35 @@ func Parse(classData []byte) (cf *ClassFile, err error) {
 	return
 }
 
-func (self *ClassFile) read(reader *ClassReader) {
-	self.readAndCheckMagic(reader)
-	self.readAndCheckVersion(reader)
-	self.constantPool = readConstantPool(reader)
-	self.accessFlags = reader.readUint16()
-	self.thisClass = reader.readUint16()
-	self.superClass = reader.readUint16()
-	self.interfaces = reader.readUint16s()
-	self.fields = readMember(reader, self.constantPool)
-	self.methods = readMember(reader, self.constantPool)
-	self.attributes = readAttributes(reader, self.constantPool)
+func (cf *ClassFile) read(reader *ClassReader) {
+	cf.readAndCheckMagic(reader)
+	cf.readAndCheckVersion(reader)
+	cf.constantPool = readConstantPool(reader)
+	cf.accessFlags = reader.readUint16()
+	cf.thisClass = reader.readUint16()
+	cf.superClass = reader.readUint16()
+	cf.interfaces = reader.readUint16s()
+	cf.fields = readMembers(reader, cf.constantPool)
+	cf.methods = readMembers(reader, cf.constantPool)
+	cf.attributes = readAttributes(reader, cf.constantPool)
 }
 
 // 检查magic
-func (self *ClassFile) readAndCheckMagic(reader *ClassReader) {
+func (cf *ClassFile) readAndCheckMagic(reader *ClassReader) {
 	magic := reader.readUint32()
 	if magic != 0xCAFEBABE {
 		panic("java.class.ClassFormatError: magic!")
 	}
 }
 
-func (self *ClassFile) readAndCheckVersion(reader *ClassReader) {
-	self.minorVersion = reader.readUint16()
-	self.majorVersion = reader.readUint16()
-	switch self.majorVersion {
+func (cf *ClassFile) readAndCheckVersion(reader *ClassReader) {
+	cf.minorVersion = reader.readUint16()
+	cf.majorVersion = reader.readUint16()
+	switch cf.majorVersion {
 	case 45:
 		return
 	case 46, 47, 48, 49, 50, 51, 52:
-		if self.minorVersion == 0 {
+		if cf.minorVersion == 0 {
 			return
 		}
 	}
@@ -69,49 +89,49 @@ func (self *ClassFile) readAndCheckVersion(reader *ClassReader) {
 }
 
 // getter
-func (self *ClassFile) MinorVersion() uint16 {
-	return self.minorVersion
+func (cf *ClassFile) MinorVersion() uint16 {
+	return cf.minorVersion
 }
 
 // getter
-func (self *ClassFile) MajorVersion() uint16 {
-	return self.majorVersion
+func (cf *ClassFile) MajorVersion() uint16 {
+	return cf.majorVersion
 }
 
 // getter
-func (self *ClassFile) ConstantPool() ConstantPool {
-	return self.constantPool
+func (cf *ClassFile) ConstantPool() ConstantPool {
+	return cf.constantPool
 }
 
 // getter
-func (self *ClassFile) AccessFlags() uint16 {
-	return self.accessFlags
+func (cf *ClassFile) AccessFlags() uint16 {
+	return cf.accessFlags
 }
 
 // getter
-func (self *ClassFile) Fields() []*MemberInfo {
-	return self.Fields()
+func (cf *ClassFile) Fields() []*MemberInfo {
+	return cf.fields
 }
 
 // getter
-func (self *ClassFile) Methods() *MemberInfo {
-	return self.Methods()
+func (cf *ClassFile) Methods() []*MemberInfo {
+	return cf.methods
 }
 
-func (self *ClassFile) ClassName() string {
-	return self.constantPool.getClassName(self.thisClass)
+func (cf *ClassFile) ClassName() string {
+	return cf.constantPool.getClassName(cf.thisClass)
 }
 
-func (self *ClassFile) SuperClassName() string {
-	if self.superClass > 0 {
-		return self.constantPool.getClassName(self.superClass)
+func (cf *ClassFile) SuperClassName() string {
+	if cf.superClass > 0 {
+		return cf.constantPool.getClassName(cf.superClass)
 	}
 	return "" // 只有java.lang.Onject没有超类
 }
-func (self *ClassFile) InterfaceNames() []string {
-	interfaceName := make([]string, len(self.interfaces))
-	for i, cpIndex := range self.interfaces {
-		interfaceName[i] = self.constantPool.getClassName(cpIndex)
+func (cf *ClassFile) InterfaceNames() []string {
+	interfaceName := make([]string, len(cf.interfaces))
+	for i, cpIndex := range cf.interfaces {
+		interfaceName[i] = cf.constantPool.getClassName(cpIndex)
 	}
 	return interfaceName
 }
