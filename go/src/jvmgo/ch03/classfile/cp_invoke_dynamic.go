@@ -9,7 +9,7 @@ CONSTANT_MethodHandle_info {
 */
 type ConstantMethodHandleInfo struct {
 	referenceKind  uint8
-	referenceIndex uint8
+	referenceIndex uint16
 }
 
 func (c *ConstantMethodHandleInfo) readInfo(reader *ClassReader) {
@@ -23,11 +23,11 @@ CONSTANT_MethodType_info {
     u2 descriptor_index;
 }
 */
-type ConstantMethodType struct {
+type ConstantMethodTypeInfo struct {
 	descriptorIndex uint16
 }
 
-func (c *ConstantMethodType) readInfo(reader *ClassReader) {
+func (c *ConstantMethodTypeInfo) readInfo(reader *ClassReader) {
 	c.descriptorIndex = reader.readUint16()
 }
 

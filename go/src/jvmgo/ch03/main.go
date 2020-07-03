@@ -20,7 +20,7 @@ func main() {
 
 func startJVM(cmd *Cmd) {
 	cp := classpath.Parse(cmd.XjreOption, cmd.cpOption)
-	fmt.Printf("classpath:%s class:%s args:%v\n",
+	fmt.Printf("classpath:%s\nclass:%s\nargs:%v\n",
 		cmd.cpOption, cmd.class, cmd.args)
 	className := strings.Replace(cmd.class, ".", "/", -1)
 	cf := loadClass(className, cp)

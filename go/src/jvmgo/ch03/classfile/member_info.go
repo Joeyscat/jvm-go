@@ -1,5 +1,22 @@
 package classfile
 
+/*
+field_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+method_info {
+    u2             access_flags;
+    u2             name_index;
+    u2             descriptor_index;
+    u2             attributes_count;
+    attribute_info attributes[attributes_count];
+}
+*/
+
 type MemberInfo struct {
 	cp              ConstantPool
 	accessFlags     uint16
@@ -27,14 +44,14 @@ func readMember(reader *ClassReader, cp ConstantPool) *MemberInfo {
 	}
 }
 
-func (self *MemberInfo) AccessFlags() uint16 {
-	return self.cp.getUtf8(self.accessFlags)
+func (mi *MemberInfo) AccessFlags() uint16 {
+	return mi.accessFlags
 }
 
-func (self *MemberInfo) Name() string {
-	return self.cp.getUtf8(self.nameIndex)
+func (mi *MemberInfo) Name() string {
+	return mi.cp.getUtf8(mi.nameIndex)
 }
 
-func (self *MemberInfo) Descriptor() string {
-	return self.cp.getUtf8(self.descriptorIndex)
+func (mi *MemberInfo) Descriptor() string {
+	return mi.cp.getUtf8(mi.descriptorIndex)
 }

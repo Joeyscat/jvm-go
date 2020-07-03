@@ -29,7 +29,7 @@ type ConstantFieldrefInfo struct {
 type ConstantMethodrefInfo struct {
 	ConstantMemberrefInfo
 }
-type ConstantInterfacerefInfo struct {
+type ConstantInterfaceMethodrefInfo struct {
 	ConstantMemberrefInfo
 }
 
@@ -42,6 +42,6 @@ func (c *ConstantMemberrefInfo) ClassName() string {
 	return c.cp.getClassName(c.classIndex)
 }
 
-func (c *ConstantMemberrefInfo) NameAndDescriptor() string {
+func (c *ConstantMemberrefInfo) NameAndDescriptor() (string, string) {
 	return c.cp.getNameAndType(c.nameAndTypeIndex)
 }

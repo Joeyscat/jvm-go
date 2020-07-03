@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"unicode/utf16"
 )
+
 /*
 CONSTANT_Utf8_info {
     u1 tag;
@@ -15,9 +16,9 @@ type ConstantUtf8Info struct {
 	str string
 }
 
-func (c *ConstantUtf8Info)readInfo(reader *ClassReader)  {
+func (c *ConstantUtf8Info) readInfo(reader *ClassReader) {
 	length := uint32(reader.readUint16())
-	bytes =: reader.readBytes(length)
+	bytes := reader.readBytes(length)
 	c.str = decodeMUTF8(bytes)
 }
 
