@@ -1,13 +1,16 @@
 package rtda
 
 type Frame struct {
-	lower        *Frame
+	lower        *Frame // stack is implemented as linked list
 	localVars    LocalVars
 	operandStack *OperandStack
+	thread       *Thread
+	nextPC       int // the next instruction after the call
 }
 
-func NewFrame(maxLocals, maxStack uint) *Frame {
+func newFrame(thread *Thread, maxLocals, maxStack uint) *Frame {
 	return &Frame{
+		thread:       thread,
 		localVars:    newLocalVars(maxLocals),
 		operandStack: newOperandStack(maxStack),
 	}
@@ -19,4 +22,16 @@ func (f *Frame) LocalVars() LocalVars {
 
 func (f *Frame) OperandStack() *OperandStack {
 	return f.operandStack
+}
+
+func (f *Frame) Thread() *Thread {
+	return f.thread
+}
+
+func (f *Frame) NextPC() int {
+	return f.nextPC
+}
+
+func (f *Frame) SetNextPC(nextPC int) {
+	f.nextPC = nextPC
 }

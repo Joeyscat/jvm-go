@@ -1,8 +1,18 @@
 package rtda
 
+/*
+JVM
+  Thread
+    pc
+    Stack
+      Frame
+        LocalVars
+        OperandStack
+*/
 type Thread struct {
-	pc    int
+	pc    int // the address of the instruction currently being executed
 	stack *Stack
+	// TODO
 }
 
 func NewThread() *Thread {
@@ -29,4 +39,8 @@ func (t *Thread) PopFrame() *Frame {
 
 func (t *Thread) CurrentFrame() *Frame {
 	return t.stack.top()
+}
+
+func (t *Thread) NewFrame(maxLocals uint, maxStack uint) *Frame {
+	return newFrame(t, maxLocals, maxStack)
 }
